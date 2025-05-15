@@ -22,6 +22,7 @@ import UserAnalytics from "./pages/UserAnalytics";
 import UserProfile from "./pages/UserProfile";
 import FriendsActivity from "./pages/FriendsActivity";
 import CollaborativePlaylists from "./pages/CollaborativePlaylists";
+import Settings from "./pages/Settings";
 
 const queryClient = new QueryClient();
 
@@ -50,6 +51,7 @@ const App = () => (
                   <Route path="/user/:id" element={<UserProfile />} />
                   <Route path="/friends" element={<FriendsActivity />} />
                   <Route path="/collaborative" element={<CollaborativePlaylists />} />
+                  <Route path="/settings" element={<Settings />} />
                   <Route path="/auth" element={<Auth />} />
                   <Route path="/index" element={<Navigate to="/home" replace />} />
                   <Route path="*" element={<NotFound />} />
