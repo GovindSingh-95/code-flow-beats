@@ -7,25 +7,42 @@ import { ChevronLeft, Play, Pause, Heart } from "lucide-react";
 import MainLayout from "@/components/layouts/MainLayout";
 import TrackItem from "@/components/TrackItem";
 import MiniPlayer from "@/components/MiniPlayer";
-import { Playlist } from "@/types";
+import { Playlist, Track } from "@/types";
+import PersonalizedSection from "@/components/PersonalizedSection";
 
 export default function PlaylistDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { playlists, setCurrentPlaylist, currentPlaylist, isPlaying, togglePlayPause, setCurrentTrack, currentTrack } = useMusic();
+  const { 
+    playlists, 
+    setCurrentPlaylist, 
+    currentPlaylist, 
+    isPlaying, 
+    togglePlayPause, 
+    setCurrentTrack, 
+    currentTrack,
+    getRecommendedTracks
+  } = useMusic();
   const [playlist, setPlaylist] = useState<Playlist | null>(null);
   const [isLiked, setIsLiked] = useState(false);
+  const [recommendedTracks, setRecommendedTracks] = useState<Track[]>([]);
   
   useEffect(() => {
     if (id) {
       const foundPlaylist = playlists.find(p => p.id === id);
       if (foundPlaylist) {
         setPlaylist(foundPlaylist);
+        
+        // Get recommended tracks based on the first track of the playlist
+        if (foundPlaylist.tracks.length > 0) {
+          const recommendations = getRecommendedTracks(foundPlaylist.tracks[0].id);
+          setRecommendedTracks(recommendations);
+        }
       } else {
         navigate("/home");
       }
     }
-  }, [id, playlists, navigate]);
+  }, [id, playlists, navigate, getRecommendedTracks]);
   
   const handlePlayPause = () => {
     if (!playlist) return;
@@ -110,6 +127,18 @@ export default function PlaylistDetail() {
             </div>
           )}
         </div>
+        
+        {/* You might also like section */}
+        {recommendedTracks.length > 0 && (
+          <div className="mt-8">
+            <PersonalizedSection
+              title="You might also like"
+              description="Based on this playlist"
+              tracks={recommendedTracks}
+              type="track"
+            />
+          </div>
+        )}
       </div>
       
       {currentTrack && <MiniPlayer />}

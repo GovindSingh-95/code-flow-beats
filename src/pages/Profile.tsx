@@ -3,7 +3,7 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { LogOut, User, Settings, HelpCircle, Bell } from "lucide-react";
+import { LogOut, User, Settings, HelpCircle, Bell, BarChart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "@/components/ui/use-toast";
 import MainLayout from "@/components/layouts/MainLayout";
@@ -43,6 +43,12 @@ export default function Profile() {
             <CardContent className="p-0">
               <MenuItem icon={<User size={18} />} label="Account Settings" />
               <Separator />
+              <MenuItem 
+                icon={<BarChart size={18} />} 
+                label="Your Listening Analytics" 
+                onClick={() => navigate('/analytics')}
+              />
+              <Separator />
               <MenuItem icon={<Bell size={18} />} label="Notifications" />
               <Separator />
               <MenuItem 
@@ -77,11 +83,15 @@ interface MenuItemProps {
   icon: React.ReactNode;
   label?: string;
   noArrow?: boolean;
+  onClick?: () => void;
 }
 
-function MenuItem({ icon, label, noArrow = false }: MenuItemProps) {
+function MenuItem({ icon, label, noArrow = false, onClick }: MenuItemProps) {
   return (
-    <div className="flex items-center px-4 py-3 cursor-pointer hover:bg-secondary/50">
+    <div 
+      className="flex items-center px-4 py-3 cursor-pointer hover:bg-secondary/50"
+      onClick={onClick}
+    >
       <div className="text-muted-foreground mr-3">
         {typeof icon === 'string' ? <span>{icon}</span> : icon}
       </div>

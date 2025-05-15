@@ -3,7 +3,7 @@ import { useMusic } from "@/providers/MusicProvider";
 import { cn } from "@/lib/utils";
 import { Track } from "@/types";
 import { Heart } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface TrackItemProps {
   track: Track;
@@ -12,8 +12,13 @@ interface TrackItemProps {
 }
 
 export default function TrackItem({ track, index, isActive = false }: TrackItemProps) {
-  const { setCurrentTrack, currentTrack, isPlaying } = useMusic();
+  const { setCurrentTrack, currentTrack, isPlaying, isTrackLiked, toggleLikeTrack } = useMusic();
   const [liked, setLiked] = useState(false);
+
+  // Update liked state when track changes or when isTrackLiked changes
+  useEffect(() => {
+    setLiked(isTrackLiked(track.id));
+  }, [track.id, isTrackLiked]);
 
   const handlePlay = () => {
     setCurrentTrack(track);
@@ -23,6 +28,12 @@ export default function TrackItem({ track, index, isActive = false }: TrackItemP
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
     return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+  
+  const handleLike = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    toggleLikeTrack(track.id);
+    setLiked(!liked);
   };
 
   return (
@@ -62,10 +73,7 @@ export default function TrackItem({ track, index, isActive = false }: TrackItemP
       </div>
       <button 
         className="px-2 text-muted-foreground hover:text-primary"
-        onClick={(e) => {
-          e.stopPropagation();
-          setLiked(!liked);
-        }}
+        onClick={handleLike}
       >
         <Heart 
           size={18} 

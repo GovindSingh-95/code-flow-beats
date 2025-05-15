@@ -17,6 +17,7 @@ import Library from "./pages/Library";
 import Profile from "./pages/Profile";
 import NowPlaying from "./pages/NowPlaying";
 import PlaylistDetail from "./pages/PlaylistDetail";
+import UserAnalytics from "./pages/UserAnalytics";
 
 const queryClient = new QueryClient();
 
@@ -36,6 +37,7 @@ const App = () => (
               <Route path="/playlist/:id" element={<PlaylistDetail />} />
               <Route path="/now-playing" element={<NowPlaying />} />
               <Route path="/profile" element={<Profile />} />
+              <Route path="/analytics" element={<UserAnalytics />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/index" element={<Navigate to="/home" replace />} />
               <Route path="*" element={<NotFound />} />
