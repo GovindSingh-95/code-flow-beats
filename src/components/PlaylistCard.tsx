@@ -1,18 +1,11 @@
 
 import { Playlist } from "@/types";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { AudioLines, Headphones, Music3 } from "lucide-react";
+import { AudioLines, Headphones, Music3, Zap, HeartPulse } from "lucide-react";
 import { useMusic } from "@/providers/MusicProvider";
 
 interface PlaylistCardProps {
-  playlist: {
-    id: string;
-    name: string;
-    description: string;
-    coverUrl: string;
-    category: "debugging" | "focus" | "lateNight" | "default";
-    tracks: any[];
-  };
+  playlist: Playlist;
 }
 
 export default function PlaylistCard({ playlist }: PlaylistCardProps) {
@@ -33,6 +26,10 @@ export default function PlaylistCard({ playlist }: PlaylistCardProps) {
         return <Music3 size={18} />;
       case "lateNight":
         return <Headphones size={18} />;
+      case "chill":
+        return <HeartPulse size={18} />;
+      case "workout":
+        return <Zap size={18} />;
       default:
         return <Music3 size={18} />;
     }

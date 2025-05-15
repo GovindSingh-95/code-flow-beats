@@ -15,7 +15,8 @@ export default function Home() {
     currentTrack, 
     getDailyMixes, 
     continueListening,
-    userStats
+    userStats,
+    getRecommendedTracks
   } = useMusic();
   const [featuredPlaylist, setFeaturedPlaylist] = useState<Playlist | null>(null);
 
@@ -101,7 +102,7 @@ export default function Home() {
           title="Top Picks For You"
           description="Based on your recent listening" 
           tracks={userStats.topArtists.slice(0, 2).flatMap(artist => 
-            sampleTracks.filter(track => track.artist === artist.name).slice(0, 2)
+            getRecommendedTracks().filter(track => track.artist === artist.name).slice(0, 2)
           )}
           type="track"
         />
