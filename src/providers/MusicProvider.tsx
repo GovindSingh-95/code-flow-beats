@@ -1,59 +1,5 @@
-
 import { createContext, useContext, useState } from "react";
-
-// Types for our music player
-type Track = {
-  id: string;
-  title: string;
-  artist: string;
-  duration: number;
-  coverUrl: string;
-  audioUrl: string;
-  genre?: string;
-  mood?: "chill" | "focus" | "workout" | "energetic" | "relaxed";
-};
-
-type Playlist = {
-  id: string;
-  name: string;
-  description: string;
-  coverUrl: string;
-  tracks: Track[];
-  category: "debugging" | "focus" | "lateNight" | "default" | "chill" | "workout";
-};
-
-type UserStats = {
-  topGenres: { name: string; count: number }[];
-  topArtists: { name: string; count: number }[];
-  listeningTime: { day: string; minutes: number }[];
-  recentlyPlayed: Track[];
-  likedTracks: Track[];
-};
-
-type MusicContextType = {
-  currentTrack: Track | null;
-  setCurrentTrack: (track: Track | null) => void;
-  isPlaying: boolean;
-  togglePlayPause: () => void;
-  playlists: Playlist[];
-  addPlaylist: (playlist: Playlist) => void;
-  currentPlaylist: Playlist | null;
-  setCurrentPlaylist: (playlist: Playlist | null) => void;
-  nextTrack: () => void;
-  prevTrack: () => void;
-  progress: number;
-  setProgress: (progress: number) => void;
-  volume: number;
-  setVolume: (volume: number) => void;
-  userStats: UserStats;
-  toggleLikeTrack: (trackId: string) => void;
-  isTrackLiked: (trackId: string) => boolean;
-  getDailyMixes: () => Playlist[];
-  getRecommendedTracks: (trackId?: string) => Track[];
-  getMoodPlaylists: (mood: string) => Playlist[];
-  continueListening: Track[];
-  setContinueListening: (track: Track) => void;
-};
+import { Playlist, Track, UserStats } from "@/types";
 
 // Sample data
 const sampleTracks: Track[] = [
@@ -231,9 +177,39 @@ const sampleUserStats: UserStats = {
   likedTracks: sampleTracks.slice(2, 4),
 };
 
+type MusicContextType = {
+  currentTrack: Track | null;
+  setCurrentTrack: (track: Track | null) => void;
+  isPlaying: boolean;
+  togglePlayPause: () => void;
+  playlists: Playlist[];
+  addPlaylist: (playlist: Playlist) => void;
+  currentPlaylist: Playlist | null;
+  setCurrentPlaylist: (playlist: Playlist | null) => void;
+  nextTrack: () => void;
+  prevTrack: () => void;
+  progress: number;
+  setProgress: (progress: number) => void;
+  volume: number;
+  setVolume: (volume: number) => void;
+  userStats: UserStats;
+  toggleLikeTrack: (trackId: string) => void;
+  isTrackLiked: (trackId: string) => boolean;
+  getDailyMixes: () => Playlist[];
+  getRecommendedTracks: (trackId?: string) => Track[];
+  getMoodPlaylists: (mood: string) => Playlist[];
+  continueListening: Track[];
+  setContinueListening: (track: Track) => void;
+  sampleTracks: Track[]; // Exposing sampleTracks
+};
+
 const MusicContext = createContext<MusicContextType | undefined>(undefined);
 
-export const MusicProvider = ({ children }: { children: React.ReactNode }) => {
+export const MusicProvider = ({ 
+  children 
+}: { 
+  children: React.ReactNode | ((props: { sampleTracks: Track[], playlists: Playlist[] }) => React.ReactNode) 
+}) => {
   const [currentTrack, setCurrentTrack] = useState<Track | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [playlists, setPlaylists] = useState<Playlist[]>(samplePlaylists);
@@ -373,34 +349,37 @@ export const MusicProvider = ({ children }: { children: React.ReactNode }) => {
     return [];
   };
 
+  const contextValue = {
+    currentTrack,
+    setCurrentTrack,
+    isPlaying,
+    togglePlayPause,
+    playlists,
+    addPlaylist,
+    currentPlaylist,
+    setCurrentPlaylist,
+    nextTrack,
+    prevTrack,
+    progress,
+    setProgress,
+    volume,
+    setVolume,
+    userStats,
+    toggleLikeTrack,
+    isTrackLiked,
+    getDailyMixes,
+    getRecommendedTracks,
+    getMoodPlaylists,
+    continueListening,
+    setContinueListening,
+    sampleTracks // Exposing sampleTracks
+  };
+
   return (
-    <MusicContext.Provider
-      value={{
-        currentTrack,
-        setCurrentTrack,
-        isPlaying,
-        togglePlayPause,
-        playlists,
-        addPlaylist,
-        currentPlaylist,
-        setCurrentPlaylist,
-        nextTrack,
-        prevTrack,
-        progress,
-        setProgress,
-        volume,
-        setVolume,
-        userStats,
-        toggleLikeTrack,
-        isTrackLiked,
-        getDailyMixes,
-        getRecommendedTracks,
-        getMoodPlaylists,
-        continueListening,
-        setContinueListening
-      }}
-    >
-      {children}
+    <MusicContext.Provider value={contextValue}>
+      {typeof children === "function" 
+        ? children({sampleTracks, playlists}) 
+        : children}
     </MusicContext.Provider>
   );
 };

@@ -1,6 +1,6 @@
 
 import { Link, useLocation } from "react-router-dom";
-import { Home, Search, Library, User } from "lucide-react";
+import { Home, Search, Library, User, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export default function Navigation() {
@@ -9,6 +9,7 @@ export default function Navigation() {
   const links = [
     { to: "/home", icon: Home, label: "Home" },
     { to: "/search", icon: Search, label: "Search" },
+    { to: "/friends", icon: Users, label: "Friends" },
     { to: "/library", icon: Library, label: "Library" },
     { to: "/profile", icon: User, label: "Profile" }
   ];

@@ -2,12 +2,14 @@
 import { useState, useEffect } from "react";
 import { useMusic } from "@/providers/MusicProvider";
 import { Card, CardContent } from "@/components/ui/card";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import CategorySection from "@/components/CategorySection";
 import FeaturedBanner from "@/components/FeaturedBanner";
 import MiniPlayer from "@/components/MiniPlayer";
 import MainLayout from "@/components/layouts/MainLayout";
 import { Playlist } from "@/types";
 import PersonalizedSection from "@/components/PersonalizedSection";
+import FriendsActivityFeed from "@/components/FriendsActivityFeed";
 
 export default function Home() {
   const { 
@@ -19,6 +21,7 @@ export default function Home() {
     getRecommendedTracks
   } = useMusic();
   const [featuredPlaylist, setFeaturedPlaylist] = useState<Playlist | null>(null);
+  const [activeTab, setActiveTab] = useState("foryou");
 
   // Simulate featured content selection
   useEffect(() => {
@@ -52,68 +55,93 @@ export default function Home() {
           <p className="text-muted-foreground">Discover music to code by</p>
         </div>
 
-        {featuredPlaylist && (
-          <div className="px-6 py-4">
-            <FeaturedBanner playlist={featuredPlaylist} />
+        <Tabs
+          defaultValue="foryou"
+          className="w-full"
+          value={activeTab}
+          onValueChange={setActiveTab}
+        >
+          <div className="px-6">
+            <TabsList className="grid w-full grid-cols-2 mb-4">
+              <TabsTrigger value="foryou">For You</TabsTrigger>
+              <TabsTrigger value="friends">Friends Activity</TabsTrigger>
+            </TabsList>
           </div>
-        )}
 
-        {/* Continue Listening Section */}
-        {continueListening.length > 0 && (
-          <PersonalizedSection 
-            title="Continue Listening" 
-            tracks={continueListening} 
-            type="track" 
-          />
-        )}
+          <TabsContent value="foryou" className="mt-0">
+            {featuredPlaylist && (
+              <div className="px-6 py-4">
+                <FeaturedBanner playlist={featuredPlaylist} />
+              </div>
+            )}
 
-        {/* Daily Mixes */}
-        <PersonalizedSection 
-          title="Daily Mixes"
-          description="Personalized playlists based on your listening" 
-          playlists={dailyMixes} 
-          type="mix" 
-        />
+            {/* Continue Listening Section */}
+            {continueListening.length > 0 && (
+              <PersonalizedSection 
+                title="Continue Listening" 
+                tracks={continueListening} 
+                type="track" 
+              />
+            )}
 
-        {/* Recently Played Section */}
-        <div className="px-6 py-4">
-          <h2 className="text-xl font-semibold mb-4">Recently Played</h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {userStats.recentlyPlayed.slice(0, 4).map(track => (
-              <Card key={track.id} className="overflow-hidden hover:bg-secondary/50 transition-colors cursor-pointer">
-                <CardContent className="p-4">
-                  <div className="aspect-square bg-secondary rounded-md mb-3 overflow-hidden">
-                    <img 
-                      src={track.coverUrl || '/placeholder.svg'} 
-                      alt={track.title} 
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <h3 className="font-medium truncate">{track.title}</h3>
-                  <p className="text-xs text-muted-foreground">{track.artist}</p>
-                </CardContent>
-              </Card>
+            {/* Daily Mixes */}
+            <PersonalizedSection 
+              title="Daily Mixes"
+              description="Personalized playlists based on your listening" 
+              playlists={dailyMixes} 
+              type="mix" 
+            />
+
+            {/* Recently Played Section */}
+            <div className="px-6 py-4">
+              <h2 className="text-xl font-semibold mb-4">Recently Played</h2>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {userStats.recentlyPlayed.slice(0, 4).map(track => (
+                  <Card key={track.id} className="overflow-hidden hover:bg-secondary/50 transition-colors cursor-pointer">
+                    <CardContent className="p-4">
+                      <div className="aspect-square bg-secondary rounded-md mb-3 overflow-hidden">
+                        <img 
+                          src={track.coverUrl || '/placeholder.svg'} 
+                          alt={track.title} 
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      <h3 className="font-medium truncate">{track.title}</h3>
+                      <p className="text-xs text-muted-foreground">{track.artist}</p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+
+            {/* Made For You - Top Picks */}
+            <PersonalizedSection
+              title="Top Picks For You"
+              description="Based on your recent listening" 
+              tracks={userStats.topArtists.slice(0, 2).flatMap(artist => 
+                getRecommendedTracks().filter(track => track.artist === artist.name).slice(0, 2)
+              )}
+              type="track"
+            />
+
+            {categories.map(category => (
+              <CategorySection 
+                key={category.id}
+                title={category.title} 
+                playlists={category.playlists} 
+              />
             ))}
-          </div>
-        </div>
+          </TabsContent>
 
-        {/* Made For You - Top Picks */}
-        <PersonalizedSection
-          title="Top Picks For You"
-          description="Based on your recent listening" 
-          tracks={userStats.topArtists.slice(0, 2).flatMap(artist => 
-            getRecommendedTracks().filter(track => track.artist === artist.name).slice(0, 2)
-          )}
-          type="track"
-        />
-
-        {categories.map(category => (
-          <CategorySection 
-            key={category.id}
-            title={category.title} 
-            playlists={category.playlists} 
-          />
-        ))}
+          <TabsContent value="friends" className="mt-0 px-6 py-4">
+            <h2 className="text-xl font-semibold mb-4">Friends Activity</h2>
+            <Card>
+              <CardContent className="p-4">
+                <FriendsActivityFeed />
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </div>
       
       {currentTrack && <MiniPlayer />}
