@@ -1,4 +1,3 @@
-
 import { useMusic } from "@/providers/MusicProvider";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
@@ -29,14 +28,7 @@ export default function Player() {
       
       // Create new progress interval
       const interval = window.setInterval(() => {
-        setProgress(prev => {
-          if (prev >= 100) {
-            // Auto advance to next track when finished
-            nextTrack();
-            return 0;
-          }
-          return prev + 0.1;
-        });
+        setProgress(progress + 0.1);
       }, 100);
       
       setProgressInterval(interval);
@@ -52,7 +44,7 @@ export default function Player() {
     return () => {
       if (progressInterval) window.clearInterval(progressInterval);
     };
-  }, [isPlaying, currentTrack, nextTrack, setProgress, progressInterval]);
+  }, [isPlaying, currentTrack, nextTrack, setProgress, progressInterval, progress]);
 
   if (!currentTrack) {
     return (

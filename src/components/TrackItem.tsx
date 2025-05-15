@@ -1,14 +1,7 @@
 
 import { useMusic } from "@/providers/MusicProvider";
 import { cn } from "@/lib/utils";
-
-interface Track {
-  id: string;
-  title: string;
-  artist: string;
-  duration: number;
-  coverUrl: string;
-}
+import { Track } from "@/types";
 
 interface TrackItemProps {
   track: Track;

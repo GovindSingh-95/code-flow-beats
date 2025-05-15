@@ -2,7 +2,7 @@
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Button } from "@/components/ui/button";
 import { useMusic } from "@/providers/MusicProvider";
-import { Album, AudioLines, Headphones, Music, Music3, PlaylistPlus, Settings } from "lucide-react";
+import { Album, AudioLines, Headphones, Music, Music3, ListPlus, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export default function Sidebar() {
@@ -26,7 +26,7 @@ export default function Sidebar() {
       <nav className="space-y-1">
         <NavItem icon={<Music />} label="All Music" active />
         <NavItem icon={<Album />} label="Albums" />
-        <NavItem icon={<PlaylistPlus />} label="New Playlist" />
+        <NavItem icon={<ListPlus />} label="New Playlist" />
         <NavItem icon={<Settings />} label="Settings" />
       </nav>
       
