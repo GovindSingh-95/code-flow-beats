@@ -2,64 +2,80 @@
 import { useMusic } from "@/providers/MusicProvider";
 import { cn } from "@/lib/utils";
 import { Track } from "@/types";
+import { Heart } from "lucide-react";
+import { useState } from "react";
 
 interface TrackItemProps {
   track: Track;
+  index?: number;
+  isActive?: boolean;
 }
 
-export default function TrackItem({ track }: TrackItemProps) {
-  const { currentTrack, setCurrentTrack, isPlaying, togglePlayPause } = useMusic();
-  
-  const isActive = currentTrack?.id === track.id;
-  
-  const handleClick = () => {
-    if (isActive) {
-      togglePlayPause();
-    } else {
-      setCurrentTrack(track);
-    }
+export default function TrackItem({ track, index, isActive = false }: TrackItemProps) {
+  const { setCurrentTrack, currentTrack, isPlaying } = useMusic();
+  const [liked, setLiked] = useState(false);
+
+  const handlePlay = () => {
+    setCurrentTrack(track);
   };
-  
-  const formatDuration = (seconds: number) => {
+
+  const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
+    const secs = Math.floor(seconds % 60);
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
-  
+
   return (
     <div 
       className={cn(
-        "flex items-center justify-between p-3 rounded-md transition-colors cursor-pointer",
-        isActive ? "bg-primary/10" : "hover:bg-muted/50"
+        "flex items-center py-2 px-1 cursor-pointer hover:bg-secondary/30 rounded-md transition-colors",
+        isActive ? "bg-secondary/50" : ""
       )}
-      onClick={handleClick}
+      onClick={handlePlay}
     >
-      <div className="flex items-center gap-3">
-        <div className={cn(
-          "w-10 h-10 rounded-md flex items-center justify-center",
-          isActive && isPlaying ? "bg-primary/20" : "bg-muted"
-        )}>
+      {index && (
+        <div className="w-8 text-center text-muted-foreground">
           {isActive && isPlaying ? (
-            <div className="flex gap-0.5 items-end">
-              <div className="w-1 h-3 bg-primary animate-pulse" />
-              <div className="w-1 h-2 bg-primary animate-pulse" style={{ animationDelay: "0.2s" }} />
-              <div className="w-1 h-4 bg-primary animate-pulse" style={{ animationDelay: "0.4s" }} />
+            <div className="flex space-x-[2px] items-end justify-center h-4">
+              <div className="bg-primary w-1 h-3 animate-pulse-slow"></div>
+              <div className="bg-primary w-1 h-2 animate-pulse-slow"></div>
+              <div className="bg-primary w-1 h-4 animate-pulse-slow"></div>
             </div>
           ) : (
-            <span className="text-xs font-mono">{track.id}</span>
+            <span>{index}</span>
           )}
         </div>
-        <div>
-          <p className={cn(
-            "font-medium line-clamp-1",
-            isActive && "text-primary"
-          )}>{track.title}</p>
-          <p className="text-xs text-muted-foreground">{track.artist}</p>
-        </div>
+      )}
+      <div className="w-10 h-10 bg-secondary rounded-md mr-3">
+        <img 
+          src={track.coverUrl || '/placeholder.svg'} 
+          alt={track.title} 
+          className="w-full h-full object-cover rounded-md"
+        />
       </div>
-      <span className="text-xs text-muted-foreground font-mono">
-        {formatDuration(track.duration)}
-      </span>
+      <div className="flex-1 min-w-0">
+        <p className={cn(
+          "font-medium truncate",
+          isActive ? "text-primary" : ""
+        )}>{track.title}</p>
+        <p className="text-xs text-muted-foreground truncate">{track.artist}</p>
+      </div>
+      <button 
+        className="px-2 text-muted-foreground hover:text-primary"
+        onClick={(e) => {
+          e.stopPropagation();
+          setLiked(!liked);
+        }}
+      >
+        <Heart 
+          size={18} 
+          fill={liked ? "currentColor" : "none"} 
+          className={liked ? "text-primary" : ""}
+        />
+      </button>
+      <div className="text-sm text-muted-foreground px-2">
+        {formatTime(track.duration)}
+      </div>
     </div>
   );
 }
